@@ -1,25 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext } from 'react';
+import { createHttpLink } from 'apollo-link-http';
+import { setContext } from 'apollo-link-context';
+import { ApolloClient } from 'apollo-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { BrowserRouter } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+import { ApolloProvider } from 'react-apollo';
+
+import { AuthContext } from './AuthConfig';
+import Header from './components/Header';
 
 function App() {
+  const { authState } = useContext(AuthContext);
+
+  const httpLink = createHttpLink({
+    uri: process.env.REACT_APP_BACKEND_ENDPOINT
+  });
+
+  const authLink = setContext((_, { headers }) => {
+    const { token } = authState;
+
+    return {
+      headers: {
+        ...headers,
+        Authorization: token ? `Bearer ${token}` : null
+      }
+    };
+  });
+
+  const link = authLink.concat(httpLink);
+
+  const client = new ApolloClient({
+    link,
+    cache: new InMemoryCache()
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <ApolloProvider client={client}>
+        <Header />
+        <Container>
+          <p>App</p>
+        </Container>
+      </ApolloProvider>
+    </BrowserRouter>
   );
 }
 
