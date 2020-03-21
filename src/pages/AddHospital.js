@@ -1,7 +1,7 @@
 import React from 'react';
 
 const AddHospital = () => {
-  return <p>Login</p>;
+  return <p>ADD HOSPITAL</p>;
 };
 
 export default AddHospital;

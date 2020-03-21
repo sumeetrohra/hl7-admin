@@ -1,7 +1,7 @@
 import React from 'react';
 
 const AddMedicalPractitioner = () => {
-  return <p>Login</p>;
+  return <p>ADD MP</p>;
 };
 
 export default AddMedicalPractitioner;
