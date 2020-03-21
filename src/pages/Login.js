@@ -67,6 +67,15 @@ const Login = () => {
           </Button>
         )}
       </Mutation>
+      <hr />
+      <p>Not Admin?</p>
+      <Button as="a" href="https://hl7-patient.netlify.com">
+        Go To Patient Page
+      </Button>
+      {'  '}
+      <Button as="a" href="https://hl7-mp.netlify.com">
+        Go To Medical Practitioner Page
+      </Button>
     </Form>
   );
 };
