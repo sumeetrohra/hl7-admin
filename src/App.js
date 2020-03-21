@@ -10,6 +10,8 @@ import { ApolloProvider } from 'react-apollo';
 import { AuthContext } from './AuthConfig';
 import Header from './components/Header';
 
+import Router from './Router';
+
 function App() {
   const { authState } = useContext(AuthContext);
 
@@ -40,7 +42,7 @@ function App() {
       <ApolloProvider client={client}>
         <Header />
         <Container>
-          <p>App</p>
+          <Router />
         </Container>
       </ApolloProvider>
     </BrowserRouter>
