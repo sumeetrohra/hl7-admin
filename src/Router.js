@@ -7,6 +7,7 @@ import { ADMIN, SET_ADMIN } from './constants';
 import Login from './pages/Login';
 import AddHospital from './pages/AddHospital';
 import AddMedicalPractitioner from './pages/AddMedicalPractitioner';
+import Home from './pages/Home';
 
 const Router = () => {
   const { authState, authDispatch } = useContext(AuthContext);
@@ -26,9 +27,10 @@ const Router = () => {
     <Switch>
       {authState && authState.token ? (
         <>
+          <Route exact path="/" component={Home} />
           <Route exact path="/add/mp" component={AddMedicalPractitioner} />
           <Route exact path="/add/hospital" component={AddHospital} />
-          <Route path="*" render={() => <Redirect to="/add/mp" />} />
+          <Route path="*" render={() => <Redirect to="/" />} />
         </>
       ) : (
         <>

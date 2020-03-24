@@ -14,7 +14,9 @@ const Header = () => {
 
   return (
     <Navbar sticky="top" collapseOnSelect expand="lg" bg="dark" variant="dark">
-      <Navbar.Brand>HL7 Admin</Navbar.Brand>
+      <Navbar.Brand as={Link} to="/">
+        HL7 Admin
+      </Navbar.Brand>
       {authState && authState.token ? (
         <>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
