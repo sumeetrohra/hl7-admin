@@ -79,7 +79,7 @@ const AddHospital = () => {
         <Form.Group>
           <Form.Label>Pincode</Form.Label>
           <Form.Control
-            type="text"
+            type="number"
             required
             value={pincode}
             onChange={e => setPincode(Number(e.target.value))}
@@ -88,7 +88,7 @@ const AddHospital = () => {
         <Form.Group>
           <Form.Label>countryCode</Form.Label>
           <Form.Control
-            type="text"
+            type="number"
             required
             value={countryCode}
             onChange={e => setCountryCode(Number(e.target.value))}
