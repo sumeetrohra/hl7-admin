@@ -4,6 +4,9 @@ import { Mutation, withApollo } from 'react-apollo';
 import { Form, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 
+import Spinner from '../components/Spinner';
+import { validateEmail } from '../utils';
+
 const AddMedicalPractitioner = ({ client }) => {
   const history = useHistory();
 
@@ -21,6 +24,9 @@ const AddMedicalPractitioner = ({ client }) => {
   const [degree, setDegree] = useState('');
   const [field, setField] = useState('');
   const [selectedHospitalId, setSelectedHospitalId] = useState();
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState();
 
   const ADD_MEDICAL_PRACTITIONER_MUTATION = gql`
     mutation addMedicalPractitioner(
@@ -182,22 +188,30 @@ const AddMedicalPractitioner = ({ client }) => {
             onChange={e => setField(e.target.value)}
           />
         </Form.Group>
-        <Form.Group>
-          <Form.Label>Hospital</Form.Label>
-          <Form.Control
-            as="select"
-            required
-            onChange={e => setSelectedHospitalId(e.target.value)}
-          >
-            <option>Select one...</option>
-            {hospitals.length > 0 &&
-              hospitals.map(({ id, name }, i) => (
+        {hospitals.length > 0 ? (
+          <Form.Group>
+            <Form.Label>Hospital</Form.Label>
+            <Form.Control
+              as="select"
+              required
+              onChange={e => setSelectedHospitalId(e.target.value)}
+            >
+              <option>Select one...</option>
+              {hospitals.map(({ id, name }, i) => (
                 <option key={i} value={id}>
                   {name}
                 </option>
               ))}
-          </Form.Control>
-        </Form.Group>
+            </Form.Control>
+          </Form.Group>
+        ) : (
+          <>
+            <p>Fetching Hospitals</p>
+            <Spinner />
+            <br />
+          </>
+        )}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
         <Mutation
           mutation={ADD_MEDICAL_PRACTITIONER_MUTATION}
           variables={{
@@ -214,9 +228,12 @@ const AddMedicalPractitioner = ({ client }) => {
             field,
             hospitalId: selectedHospitalId
           }}
-          onError={err => console.log(err)}
+          onError={err => {
+            setError('Some Error occurred');
+            setLoading(false);
+          }}
           onCompleted={res => {
-            console.log(res);
+            setLoading(false);
             history.push('/', {
               message: 'Add medical practitioner successful'
             });
@@ -226,9 +243,34 @@ const AddMedicalPractitioner = ({ client }) => {
             <Button
               type="button"
               variant="primary"
-              onClick={addMedicalPractitioner}
+              style={{ opacity: loading ? 0.7 : 1 }}
+              disabled={loading ? true : false}
+              onClick={() => {
+                setError();
+                if (
+                  mpId &&
+                  lastName &&
+                  firstName &&
+                  middleName &&
+                  password &&
+                  dob &&
+                  sex &&
+                  address &&
+                  degree &&
+                  field &&
+                  selectedHospitalId &&
+                  validateEmail(email)
+                ) {
+                  setLoading(true);
+                  addMedicalPractitioner();
+                } else if (!validateEmail(email)) {
+                  setError('Please enter a valid email address');
+                } else {
+                  setError('All fields are required');
+                }
+              }}
             >
-              Add Medical Practitioner
+              {loading ? <Spinner /> : 'Add Medical Practitioner'}
             </Button>
           )}
         </Mutation>

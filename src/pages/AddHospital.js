@@ -4,6 +4,8 @@ import { Mutation } from 'react-apollo';
 import { Form, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 
+import Spinner from '../components/Spinner';
+
 const AddHospital = () => {
   const history = useHistory();
 
@@ -13,6 +15,9 @@ const AddHospital = () => {
   const [district, setDistrict] = useState('');
   const [pincode, setPincode] = useState();
   const [countryCode, setCountryCode] = useState();
+
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const ADD_HOSPITAL_MUTATION = gql`
     mutation addHospital(
@@ -94,6 +99,7 @@ const AddHospital = () => {
             onChange={e => setCountryCode(Number(e.target.value))}
           />
         </Form.Group>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
         <Mutation
           mutation={ADD_HOSPITAL_MUTATION}
           variables={{
@@ -105,14 +111,38 @@ const AddHospital = () => {
             countryCode
           }}
           onCompleted={res => {
-            console.log(res);
+            setError();
+            setLoading(false);
             history.push('/', { message: 'Hospital added successfully' });
           }}
-          onError={err => console.log(err)}
+          onError={err => {
+            setError('some error occurred');
+          }}
         >
           {addHospital => (
-            <Button onClick={addHospital} variant="primary" type="submit">
-              Add Hospital
+            <Button
+              variant="primary"
+              type="submit"
+              style={{ opacity: loading ? 0.7 : 1 }}
+              disabled={loading ? true : false}
+              onClick={() => {
+                setError();
+                if (
+                  name &&
+                  address &&
+                  city &&
+                  district &&
+                  pincode &&
+                  countryCode
+                ) {
+                  setLoading(true);
+                  addHospital();
+                } else {
+                  setError('All fields are required');
+                }
+              }}
+            >
+              {loading ? <Spinner /> : 'Add Hospital'}
             </Button>
           )}
         </Mutation>

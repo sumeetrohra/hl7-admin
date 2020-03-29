@@ -5,6 +5,8 @@ import { Mutation } from 'react-apollo';
 
 import { SET_ADMIN } from '../constants';
 import { AuthContext } from '../AuthConfig';
+import Spinner from '../components/Spinner';
+import { validateEmail } from '../utils';
 
 const Login = () => {
   const handleSubmit = event => {
@@ -30,6 +32,8 @@ const Login = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -55,15 +59,34 @@ const Login = () => {
           onChange={e => setPassword(e.target.value)}
         />
       </Form.Group>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <Mutation
         mutation={ADMIN_LOGIN_MUTATION}
         variables={{ email, password }}
         onCompleted={data => _onLogin(data)}
-        onError={err => console.error(err)}
+        onError={err => {
+          setError('Invalid email or password');
+          setLoading(false);
+        }}
       >
-        {mutation => (
-          <Button variant="primary" type="submit" onClick={mutation}>
-            Submit
+        {adminLogin => (
+          <Button
+            variant="primary"
+            type="submit"
+            style={{ opacity: loading ? 0.7 : 1 }}
+            disabled={loading ? true : false}
+            onClick={() => {
+              console.log('clicked');
+              setError();
+              if (validateEmail(email) && password) {
+                setLoading(true);
+                adminLogin();
+              } else {
+                setError('please enter valid data');
+              }
+            }}
+          >
+            {loading ? <Spinner /> : 'Login'}
           </Button>
         )}
       </Mutation>
